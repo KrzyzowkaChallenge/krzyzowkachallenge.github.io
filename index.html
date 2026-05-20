@@ -2,13 +2,818 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Krzyżówka Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krzyżówka Challenge — Polska krzyżówka nowej generacji</title>
+    <meta name="description" content="Krzyżówki po polsku z rankingiem, nagrodami i avatarami. Graj i rywalizuj!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple-deep: #1a0a2e;
+            --purple-dark: #2d1b4e;
+            --purple-mid: #6b3fa0;
+            --purple-light: #9b6dd7;
+            --purple-glow: #b388ff;
+            --orange-primary: #f5a623;
+            --orange-bright: #ffb74d;
+            --orange-hot: #ff8f00;
+            --green-success: #4cdf8b;
+            --white: #f5f0ff;
+            --white-soft: rgba(245, 240, 255, 0.7);
+            --glass: rgba(45, 27, 78, 0.6);
+            --glass-border: rgba(155, 109, 215, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--purple-deep);
+            color: var(--white);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ═══ BACKGROUND ═══ */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(107, 63, 160, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(107, 63, 160, 0.08) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .bg-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow-1 {
+            width: 600px; height: 600px;
+            top: -200px; right: -100px;
+            background: radial-gradient(circle, rgba(107, 63, 160, 0.4), transparent);
+            animation: floatGlow 12s ease-in-out infinite;
+        }
+
+        .bg-glow-2 {
+            width: 500px; height: 500px;
+            bottom: -150px; left: -100px;
+            background: radial-gradient(circle, rgba(245, 166, 35, 0.2), transparent);
+            animation: floatGlow 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.1); }
+        }
+
+        /* ═══ LAYOUT ═══ */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ═══ NAV ═══ */
+        nav {
+            padding: 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .nav-logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--purple-mid), var(--purple-light));
+            border-radius: 10px;
+            border: 2px solid var(--orange-primary);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 5px;
+        }
+
+        .nav-logo-icon span {
+            background: rgba(255,255,255,0.25);
+            border-radius: 2px;
+        }
+
+        .nav-logo-icon span:nth-child(5) {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .nav-logo-text {
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--white-soft);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange-primary);
+        }
+
+        /* ═══ HERO ═══ */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            padding: 80px 0 60px;
+            min-height: 80vh;
+        }
+
+        .hero-content {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--orange-bright);
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge .dot {
+            width: 8px; height: 8px;
+            background: var(--green-success);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .accent {
+            background: linear-gradient(135deg, var(--orange-primary), var(--orange-hot));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.15rem;
+            color: var(--white-soft);
+            line-height: 1.6;
+            margin-bottom: 36px;
+            max-width: 460px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-store {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-google {
+            background: var(--orange-primary);
+            color: var(--purple-deep);
+        }
+
+        .btn-google:hover {
+            background: var(--orange-bright);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 166, 35, 0.3);
+        }
+
+        .btn-apple {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--white);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-apple:hover {
+            border-color: var(--purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(155, 109, 215, 0.2);
+        }
+
+        .btn-store svg {
+            width: 22px; height: 22px;
+            flex-shrink: 0;
+        }
+
+        /* ═══ CROSSWORD ANIMATION ═══ */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        .crossword-board {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            gap: 5px;
+            width: 380px;
+            height: 380px;
+            transform: perspective(800px) rotateY(-8deg) rotateX(4deg);
+            transition: transform 0.5s ease;
+        }
+
+        .crossword-board:hover {
+            transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .cell {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--purple-deep);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .cell.filled {
+            background: rgba(155, 109, 215, 0.15);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            color: var(--purple-light);
+        }
+
+        .cell.active {
+            background: linear-gradient(135deg, var(--green-success), #6ee7a0);
+            border: none;
+            color: var(--purple-deep);
+            animation: cellReveal 0.6s ease-out both;
+            box-shadow: 0 4px 15px rgba(76, 223, 139, 0.3);
+        }
+
+        .cell.highlight {
+            background: linear-gradient(135deg, var(--orange-primary), var(--orange-bright));
+            border: none;
+            color: var(--purple-deep);
+            animation: cellReveal 0.6s ease-out both;
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+        }
+
+        .cell.empty {
+            background: transparent;
+            border: none;
+        }
+
+        @keyframes cellReveal {
+            0% { transform: scale(0.3) rotateY(90deg); opacity: 0; }
+            60% { transform: scale(1.1) rotateY(0deg); opacity: 1; }
+            100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        }
+
+        /* ═══ FEATURES ═══ */
+        .features {
+            padding: 80px 0;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-header h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .features-header p {
+            color: var(--white-soft);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            animation: slideUp 0.6s ease-out both;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--purple-light);
+            box-shadow: 0 20px 60px rgba(107, 63, 160, 0.2);
+        }
+
+        .feature-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon.purple { background: linear-gradient(135deg, var(--purple-mid), var(--purple-light)); }
+        .feature-icon.orange { background: linear-gradient(135deg, var(--orange-hot), var(--orange-primary)); }
+        .feature-icon.green { background: linear-gradient(135deg, #2e9e5e, var(--green-success)); }
+
+        .feature-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-card p {
+            color: var(--white-soft);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        /* ═══ CATEGORIES ═══ */
+        .categories {
+            padding: 60px 0 80px;
+        }
+
+        .categories h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .category-track {
+            display: flex;
+            gap: 16px;
+            animation: scrollCategories 20s linear infinite;
+            width: max-content;
+        }
+
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .category-pill.c1 { background: linear-gradient(135deg, rgba(52, 81, 178, 0.5), rgba(52, 81, 178, 0.2)); }
+        .category-pill.c2 { background: linear-gradient(135deg, rgba(231, 76, 60, 0.5), rgba(231, 76, 60, 0.2)); }
+        .category-pill.c3 { background: linear-gradient(135deg, rgba(142, 68, 173, 0.5), rgba(142, 68, 173, 0.2)); }
+        .category-pill.c4 { background: linear-gradient(135deg, rgba(39, 174, 96, 0.5), rgba(39, 174, 96, 0.2)); }
+        .category-pill.c5 { background: linear-gradient(135deg, rgba(41, 128, 185, 0.5), rgba(41, 128, 185, 0.2)); }
+        .category-pill.c6 { background: linear-gradient(135deg, rgba(243, 156, 18, 0.5), rgba(243, 156, 18, 0.2)); }
+        .category-pill.c7 { background: linear-gradient(135deg, rgba(22, 160, 133, 0.5), rgba(22, 160, 133, 0.2)); }
+
+        @keyframes scrollCategories {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .category-overflow {
+            overflow: hidden;
+            mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* ═══ CTA ═══ */
+        .cta {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--purple-dark), rgba(107, 63, 160, 0.3));
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 64px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(245, 166, 35, 0.08), transparent 50%);
+            pointer-events: none;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .cta p {
+            color: var(--white-soft);
+            font-size: 1.1rem;
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--white-soft);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--orange-primary);
+        }
+
+        .footer-copy {
+            font-size: 0.82rem;
+            color: rgba(245, 240, 255, 0.4);
+        }
+
+        /* ═══ ANIMATIONS ═══ */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 60px 0 40px;
+                gap: 40px;
+            }
+
+            .hero h1 { font-size: 2.5rem; }
+            .hero-description { max-width: 100%; }
+            .hero-buttons { justify-content: center; }
+
+            .crossword-board {
+                width: 280px; height: 280px;
+                transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+            }
+
+            .cell { font-size: 1rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .features-header h2, .categories h2, .cta h2 { font-size: 1.8rem; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .crossword-board { width: 240px; height: 240px; }
+            .cell { font-size: 0.85rem; border-radius: 5px; }
+            .btn-store { padding: 12px 20px; font-size: 0.85rem; }
+            .cta-box { padding: 40px 24px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Krzyżówka Challenge</h1>
-    <p>Oficjalna strona aplikacji Krzyżówka Challenge.</p>
-    <p><a href="https://krzyzowkachallenge.github.io/krzyzowka.challenge-privacy-/">Polityka prywatności</a></p>
-    <p><a href="https://krzyzowkachallenge.github.io/Support/">Pomoc</a></p>
-    <p>Kontakt: krzyzowka.support@gmail.com</p>
+
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<div class="container">
+
+    <!-- NAV -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+            </div>
+            <span class="nav-logo-text">Krzyżówka Challenge</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#funkcje">Funkcje</a></li>
+            <li><a href="#kategorie">Kategorie</a></li>
+            <li><a href="https://krzyzowkachallenge.github.io/krzyzowka.challenge-privacy-/">Prywatność</a></li>
+            <li><a href="https://krzyzowkachallenge.github.io/Support/">Pomoc</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Dostępna na Android i iOS
+            </div>
+            <h1>Polska krzyżówka<br><span class="accent">nowej generacji</span></h1>
+            <p class="hero-description">
+                Rozwiązuj krzyżówki po polsku, rywalizuj w globalnym rankingu, zbieraj nagrody i personalizuj swój profil. Setki haseł w sześciu kategoriach czekają na Ciebie!
+            </p>
+            <div class="hero-buttons">
+                <a href="https://play.google.com/store/apps/details?id=com.krzyzowkachallenge.app" class="btn-store btn-google" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.73c-.36-.17-.59-.52-.59-.95V1.22c0-.43.23-.78.59-.95l11.45 11.73L3.18 23.73zm1.4.43L16.1 13.52l-2.65-2.72L4.58 24.16zm14.13-10.7L16.1 11.48 4.58-.16l10.87 10.36 3.26-3.14a.78.78 0 0 1 1.12.04.78.78 0 0 1-.04 1.12l-.08.07v.01l3.26 3.14a.78.78 0 0 1-.04 1.12.78.78 0 0 1-1.08-.04zm-2.61-2.68 2.61 2.68z"/></svg>
+                    Google Play
+                </a>
+                <a href="#" class="btn-store btn-apple">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    Pobierz w App Store
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="crossword-board" id="crosswordBoard"></div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="funkcje">
+        <div class="features-header">
+            <h2>Dlaczego pokochasz Krzyżówkę?</h2>
+            <p>Więcej niż zwykła krzyżówka — to pełne doświadczenie growe</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" style="animation-delay: 0.1s">
+                <div class="feature-icon purple">🧩</div>
+                <h3>Setki unikalnych haseł</h3>
+                <p>Ponad 1400 haseł w sześciu kategoriach, od kultury po naukę. System antypowtórek zapewnia świeżość.</p>
+            </div>
+            <div class="feature-card" style="animation-delay: 0.2s">
+                <div class="feature-icon orange">🏆</div>
+                <h3>Globalny ranking</h3>
+                <p>Rywalizuj z graczami z całej Polski. Wspinaj się w rankingu, zdobywaj XP i udowodnij że jesteś najlepszy.</p>
+            </div>
+            <div class="feature-card" style="animation-delay: 0.3s">
+                <div class="feature-icon green">🎨</div>
+                <h3>Avatary i ramki</h3>
+                <p>Personalizuj swój profil unikalnymi avatarami, animowanymi ramkami i banerami. Wyróżnij się w rankingu.</p>
+            </div>
+            <div class="feature-card" style="animation-delay: 0.4s">
+                <div class="feature-icon orange">🔥</div>
+                <h3>Daily Challenge</h3>
+                <p>Codzienne wyzwania z bonusowymi nagrodami. Buduj serie i zdobywaj ekskluzywne odznaki.</p>
+            </div>
+            <div class="feature-card" style="animation-delay: 0.5s">
+                <div class="feature-icon purple">💡</div>
+                <h3>System podpowiedzi</h3>
+                <p>Utknąłeś? Użyj podpowiedzi — odkryj literę lub całe hasło. Zarządzaj monetami strategicznie.</p>
+            </div>
+            <div class="feature-card" style="animation-delay: 0.6s">
+                <div class="feature-icon green">📊</div>
+                <h3>Śledzenie postępów</h3>
+                <p>Poziomy, XP, combo — wszystko się liczy. Obserwuj swoje statystyki i śledź postęp w każdej kategorii.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="categories" id="kategorie">
+        <h2>Sześć kategorii, nieskończona zabawa</h2>
+        <div class="category-overflow">
+            <div class="category-track">
+                <span class="category-pill c1">🎬 Filmy i Seriale</span>
+                <span class="category-pill c2">🍕 Food & Fast Food</span>
+                <span class="category-pill c3">🎮 Gaming</span>
+                <span class="category-pill c4">🌍 Geografia</span>
+                <span class="category-pill c5">🔬 Nauka</span>
+                <span class="category-pill c6">📱 Social Media</span>
+                <span class="category-pill c7">🏫 Szkoła</span>
+                <!-- Duplicate for seamless loop -->
+                <span class="category-pill c1">🎬 Filmy i Seriale</span>
+                <span class="category-pill c2">🍕 Food & Fast Food</span>
+                <span class="category-pill c3">🎮 Gaming</span>
+                <span class="category-pill c4">🌍 Geografia</span>
+                <span class="category-pill c5">🔬 Nauka</span>
+                <span class="category-pill c6">📱 Social Media</span>
+                <span class="category-pill c7">🏫 Szkoła</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-box">
+            <h2>Gotowy na wyzwanie?</h2>
+            <p>Dołącz do tysięcy graczy i sprawdź swoją wiedzę</p>
+            <div class="cta-buttons">
+                <a href="https://play.google.com/store/apps/details?id=com.krzyzowkachallenge.app" class="btn-store btn-google" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.73c-.36-.17-.59-.52-.59-.95V1.22c0-.43.23-.78.59-.95l11.45 11.73L3.18 23.73zm1.4.43L16.1 13.52l-2.65-2.72L4.58 24.16zm14.13-10.7L16.1 11.48 4.58-.16l10.87 10.36 3.26-3.14a.78.78 0 0 1 1.12.04.78.78 0 0 1-.04 1.12l-.08.07v.01l3.26 3.14a.78.78 0 0 1-.04 1.12.78.78 0 0 1-1.08-.04zm-2.61-2.68 2.61 2.68z"/></svg>
+                    Pobierz na Android
+                </a>
+                <a href="#" class="btn-store btn-apple">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    Pobierz w App Store
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <ul class="footer-links">
+                <li><a href="https://krzyzowkachallenge.github.io/krzyzowka.challenge-privacy-/">Polityka prywatności</a></li>
+                <li><a href="https://krzyzowkachallenge.github.io/Support/">Pomoc</a></li>
+                <li><a href="mailto:krzyzowka.support@gmail.com">Kontakt</a></li>
+            </ul>
+            <span class="footer-copy">&copy; 2026 Krzyżówka Challenge. Wszelkie prawa zastrzeżone.</span>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    // ═══ CROSSWORD BOARD ANIMATION ═══
+    const layout = [
+        [0,0,1,0,0,1,0],
+        [0,1,1,1,1,1,0],
+        [0,0,1,0,0,1,0],
+        [1,1,1,1,1,1,1],
+        [0,0,1,0,0,0,0],
+        [0,1,1,1,1,0,0],
+        [0,0,1,0,1,0,0],
+    ];
+
+    const words = {
+        row1: ['K','R','Z','Y','Ż','Ó','W'],
+        col1: ['G','R','A','J'],
+        highlights: [
+            {r:0,c:2,l:'K'},{r:0,c:5,l:'G'},
+            {r:1,c:1,l:'R'},{r:1,c:2,l:'Z'},{r:1,c:3,l:'Y'},{r:1,c:4,l:'Ż'},{r:1,c:5,l:'Ó'},
+            {r:2,c:2,l:'W'},{r:2,c:5,l:'R'},
+            {r:3,c:0,l:'P'},{r:3,c:1,l:'O'},{r:3,c:2,l:'L'},{r:3,c:3,l:'S'},{r:3,c:4,l:'K'},{r:3,c:5,l:'A'},{r:3,c:6,l:'!'},
+            {r:4,c:2,l:'K'},
+            {r:5,c:1,l:'Q'},{r:5,c:2,l:'U'},{r:5,c:3,l:'I'},{r:5,c:4,l:'Z'},
+            {r:6,c:2,l:'A'},{r:6,c:4,l:'!'},
+        ]
+    };
+
+    const board = document.getElementById('crosswordBoard');
+
+    for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 7; c++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+
+            if (layout[r][c] === 0) {
+                cell.classList.add('empty');
+            } else {
+                cell.classList.add('filled');
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+            }
+            board.appendChild(cell);
+        }
+    }
+
+    // Animate letters appearing
+    function animateBoard() {
+        const cells = board.querySelectorAll('.cell.filled');
+        cells.forEach(cell => {
+            cell.textContent = '';
+            cell.className = 'cell filled';
+        });
+
+        words.highlights.forEach((item, index) => {
+            setTimeout(() => {
+                const cellIndex = item.r * 7 + item.c;
+                const cell = board.children[cellIndex];
+                if (cell) {
+                    cell.textContent = item.l;
+                    // Horizontal word "POLSKA!" gets orange
+                    if (item.r === 3) {
+                        cell.className = 'cell highlight';
+                    } else {
+                        cell.className = 'cell active';
+                    }
+                }
+            }, 150 + index * 120);
+        });
+
+        // Restart animation
+        setTimeout(animateBoard, 6000);
+    }
+
+    // Start after page load
+    setTimeout(animateBoard, 800);
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.style.animationPlayState = 'paused';
+        observer.observe(card);
+    });
+</script>
+
 </body>
 </html>
